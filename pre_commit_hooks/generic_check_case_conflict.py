@@ -5,8 +5,8 @@ from typing import Optional
 from typing import Sequence
 from typing import Set
 
-from python.util import added_files
-from python.util import cmd_output
+from pre_commit_hooks.util import added_files
+from pre_commit_hooks.util import cmd_output
 
 
 def lower_set(iterable: Iterable[str]) -> Set[str]:
