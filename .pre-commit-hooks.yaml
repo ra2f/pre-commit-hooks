@@ -657,3 +657,23 @@
   types:
     - yaml
   entry: yamllint
+
+
+#########
+#########
+## C++ ##
+#########
+#########
+
+- id: c-clang-format
+  name: '[C] Clang format'
+  description: >
+    This hook fix clang format.
+    Origin: https://clang.llvm.org/
+  entry: clang-format
+  language: python
+  'types_or': [c++, c, c#, cuda, java, javascript, objective-c, proto]
+  args: ["-style=file", "-i"]
+  require_serial: false
+  additional_dependencies: []
+  minimum_pre_commit_version: '2.9.2'
