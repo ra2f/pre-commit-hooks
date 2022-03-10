@@ -62,6 +62,21 @@ repos:
       - id: yaml-yamllint
       - id: cmake-format
       - id: cmake-lint
+      - id: python-check-ast
+      - id: python-check-docstring-first
+      - id: python-debug-statements
+      - id: python-double-quote-string-fixer
+      - id: python-fix-encoding-pragma
+      - id: python-requirements-txt-fixer
+      - id: python-safetydb
+      - id: python-isort-config
+      - id: python-isort-seed-config
+      - id: python-isort
+      - id: python-black
+      - id: python-pylint-config
+      - id: python-pylint
+      - id: python-setup-cfg-fmt
+
 ```
 
 ## Two ways to invoke pre-commit
