@@ -677,3 +677,24 @@
   require_serial: false
   additional_dependencies: []
   minimum_pre_commit_version: '2.9.2'
+
+###########
+###########
+## CMake ##
+###########
+###########
+
+- id: cmake-format
+  name: cmake-format
+  description: '[CMake] cmake-format'
+  entry: cmake-format
+  args: [--in-place]
+  language: python
+  types: [cmake]
+
+- id: cmake-lint
+  name: cmake-lint
+  description: '[CMake] cmake-lint'
+  entry: cmake-lint
+  language: python
+  types: [cmake]
