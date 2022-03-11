@@ -559,14 +559,14 @@
 - id: shell-script-must-have-extension
   name: Non-executable shell script filename ends in .sh
   description: Non-executable shell script filename ends in .sh
-  entry: pre_commit_pre_commit_hooks/shell-script-must-have-extension
+  entry: pre_commit_hooks/shell-script-must-have-extension
   language: script
   types: [shell, non-executable]
 
 - id: shell-script-must-not-have-extension
   name: Executable shell script omits the filename extension
   description: Executable shell script omits the filename extension
-  entry: pre_commit_pre_commit_hooks/shell-script-must-not-have-extension
+  entry: pre_commit_hooks/shell-script-must-not-have-extension
   language: script
   types: [shell, executable]
 
