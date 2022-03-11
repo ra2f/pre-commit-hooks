@@ -11,13 +11,15 @@ import sys
 from typing import Generator
 from typing import NamedTuple
 from typing import Sequence
+from typing import List
+from typing import Set
 
 from pre_commit_hooks.util import cmd_output
 from pre_commit_hooks.util import zsplit
 
 EXECUTABLE_VALUES = frozenset(('1', '3', '5', '7'))
 
-def check_executables(paths: list[str]) -> int:
+def check_executables(paths: List[str]) -> int:
     if sys.platform == 'win32':  # pragma: win32 cover
         return _check_git_filemode(paths)
     else:  # pragma: win32 no cover
@@ -44,7 +46,7 @@ def git_ls_files(paths: Sequence[str]) -> Generator[GitLsFile, None, None]:
 
 
 def _check_git_filemode(paths: Sequence[str]) -> int:
-    seen: set[str] = set()
+    seen: Set[str] = set()
     for ls_file in git_ls_files(paths):
         is_executable = any(b in EXECUTABLE_VALUES for b in ls_file.mode[-3:])
         if is_executable and not has_shebang(ls_file.filename):
