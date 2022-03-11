@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+export PATH=$PATH:/usr/local/bin
+
+if ! which hadolint &>/dev/null; then
+    >&2 echo 'hadolint command not found. Trying to install it manually in /usr/local/bin ...'
+    apt update
+    apt install wget
+    wget https://github.com/hadolint/hadolint/releases/download/v2.8.0/hadolint-Linux-x86_64 -O /usr/local/bin/hadolint
+    chmod +x /usr/local/bin/hadolint
+fi
+
+hadolint "$@"
