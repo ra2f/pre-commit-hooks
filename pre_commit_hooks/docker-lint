@@ -1,11 +1,8 @@
-#!/usr/bin/env bash
-
-set -o errexit
-set -o pipefail
-set -o nounset
+#!/bin/bash
+set -eu
 
 export PATH=$PATH:/usr/local/bin
-
+# Install if not exist
 if ! which hadolint &>/dev/null; then
     >&2 echo 'hadolint command not found. Trying to install it manually in /usr/local/bin ...'
     apt update
@@ -14,4 +11,17 @@ if ! which hadolint &>/dev/null; then
     chmod +x /usr/local/bin/hadolint
 fi
 
-hadolint "$@"
+# Apply only on modified files
+RET="0"
+while read file; do
+    if which hadolint &>/dev/null; then
+        HADOLINT_IGNORED_RULES=$(echo $@ | sed "s/,/ --ignore /g")
+        if ! hadolint $HADOLINT_IGNORED_RULES "${file}"; then
+            RET="1"
+        fi
+    fi
+done < <(git diff --cached --name-only -- '*.dockerfile')
+
+if [[ "$RET" == "1" ]]; then
+    exit 1
+fi
