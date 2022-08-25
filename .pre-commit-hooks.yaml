@@ -698,18 +698,3 @@
   entry: cmake-lint
   language: python
   types: [cmake]
-
-############
-############
-## Docker ##
-############
-############
-
-- id: docker-lint
-  name: '[Docker] Lint files'
-  description: >
-    This hook runs Hadolint.
-    Origin: https://github.com/hadolint/hadolint
-  language: script
-  types: ["dockerfile"]
-  entry: pre_commit_hooks/docker-lint
