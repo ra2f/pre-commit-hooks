@@ -33,6 +33,7 @@ repos:
       - id: git-check-merge-conflict
       - id: git-commit-msg
       - id: generic-check-byte-order-marker
+      - id: generic-fix-byte-order-marker
       - id: generic-check-case-conflict
       - id: generic-check-executables-have-shebangs
       - id: generic-check-symlinks
