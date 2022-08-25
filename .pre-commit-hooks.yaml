@@ -60,7 +60,7 @@
   entry: git-check-mailmap
 
 - id: git-forbid-binary
-  name: Forbid binaries
+  name: '[Git] Forbid binaries'
   description: Forbid binary files from being committed
   entry: pre_commit_hooks/git-forbid-binary
   language: script
@@ -74,7 +74,7 @@
   language: script
 
 - id: git-dirty
-  name: Check if the git tree is dirty
+  name: '[Git] Check if the git tree is dirty'
   description: Detect if git tree contains modified, staged, or untracked files
   entry: pre_commit_hooks/git-dirty
   language: script
@@ -557,14 +557,14 @@
     - --exclude=SC1091
 
 - id: shell-script-must-have-extension
-  name: Non-executable shell script filename ends in .sh
+  name: '[Shell] Non-executable shell script filename ends in .sh'
   description: Non-executable shell script filename ends in .sh
   entry: pre_commit_hooks/shell-script-must-have-extension
   language: script
   types: [shell, non-executable]
 
 - id: shell-script-must-not-have-extension
-  name: Executable shell script omits the filename extension
+  name: '[Shell] Executable shell script omits the filename extension'
   description: Executable shell script omits the filename extension
   entry: pre_commit_hooks/shell-script-must-not-have-extension
   language: script
