@@ -700,3 +700,15 @@
   entry: cmake-lint
   language: python
   types: [cmake]
+
+#############
+#############
+## DOXYGEN ##
+#############
+#############
+- id: doxygen-check-syntax
+  name: doxygen-check-syntax
+  description: '[Doxygen] Documentation linter'
+  entry: doxygen-check-syntax
+  language: python
+  types: [file]

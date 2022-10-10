@@ -76,8 +76,7 @@ repos:
       - id: python-pylint-config
       - id: python-pylint
       - id: python-setup-cfg-fmt
-      - id: docker-lint
-
+      - id: doxygen-check-syntax
 ```
 
 ## Two ways to invoke pre-commit
