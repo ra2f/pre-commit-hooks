@@ -85,11 +85,33 @@ repos:
 If you want to invoke the checks as a git pre-commit hook, run:
 
 ```
-    pre-commit install
+  pre-commit install
 ```
 
 If you want to run the checks on-demand (outside of git hooks), run:
 
 ```
-    pre-commit run --all-files --verbose
+  pre-commit run --all-files --verbose
 ```
+
+
+## Notes Pylint
+
+If you are using any virtual environment in your repository,
+you need to update the `.pylintrc`
+The default Pylint binary is available in a dedicated Python environment
+created by pre-commit.
+
+This dedicated environment does not has access to your development environment.
+You need to update the `.pylintrc` with:
+
+```
+  init-hook=
+    try: import pylint_venv
+    except ImportError: pass
+    else: pylint_venv.inithook()
+```
+
+It is enabled by default in the configuration of this repo.
+You can find more information on the 
+[pylint-venv repository](https://github.com/jgosmann/pylint-venv).
