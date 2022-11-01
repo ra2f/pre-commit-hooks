@@ -488,9 +488,7 @@
   description: >
     Run pylint
     Origin: https://github.com/PyCQA/pylint
-  language: python
-  additional_dependencies:
-    - pylint
+  language: system
   types:
     - python
   entry: pylint
