@@ -7,10 +7,7 @@ r'''[MAIN]
 
 # Python code to execute, usually for sys.path manipulation such as
 # pygtk.require().
-init-hook=
-   try: import pylint_venv
-   except ImportError: pass
-   else: pylint_venv.inithook()
+#init-hook=
 
 # Files or directories to be skipped. They should be base names, not
 # paths.
