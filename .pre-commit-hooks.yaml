@@ -1,140 +1,62 @@
 ---
-
 # This file tells https://pre-commit.com/
 # which hooks are provided by this repo
 # for use by other git repos.
 
-# - id: the id of the hook - used in pre-commit-config.yaml.
-# # Description
-#   name: 'the name of the hook, shown during hook execution.'
-#   description: description of the hook. used for metadata purposes only.
-# # Installation
-#   language: the language of the hook, tells pre-commit
-#   how to install the hook.
-#   language_version: overrides language version.
-# # Scope
-#   files: the pattern of files to run on.
-#   exclude: exclude files that were matched by files
-#   types: list of file types to run on.
-#   exclude_types: exclude files that were matched by types.
-#   always_run: if true this hook will run even if there are no matching files.
-# # Output
-#   verbose: if true, forces the output of the hook to be printed.
-# # Misc
-#   minimum_pre_commit_version: indicate a minimum compatible
-#   pre-commit version.
-#   require_serial: if true, run using a single process.
-# # Action
-#   entry: the entry point - the executable to run.
-#   pass_filenames: if false no arguments will be passed to the hook.
-#   args: list of additional parameters to pass to the hook.
-
-#  Template
-# - id:
-#   name:
-#   description:
-#   language:
-#   additional_dependencies:
-#   files:
-#   exclude:
-#   types:
-#   exclude_types:
-#   always_run:
-#   entry:
-#   pass_filenames:
-#   args:
-
-#########
-#########
-## Git ##
-#########
-#########
-
-- id: git-check-mailmap
-  name: '[Git] Check mailmap'
-  description: >
-    Detect if an email address needs to be added to mailmap
+#############
+#############
+## Ansible ##
+#############
+#############
+- id: ansible-lint
+  name: Ansible-lint
+  description: '[Ansible] Ansible linter'
+  entry: python3 -m ansiblelint -v --force-color
   language: python
-  exclude: .*  # Otherwise runs once per file.
+  pass_filenames: false
   always_run: true
-  entry: git-check-mailmap
 
-- id: git-forbid-binary
-  name: '[Git] Forbid binaries'
-  description: Forbid binary files from being committed
-  entry: pre_commit_hooks/git-forbid-binary
-  language: script
-  types: ['binary']
-
-- id: git-check
-  name: Check for conflict markers and core.whitespace errors
-  # yamllint disable-line rule:line-length
-  description: Use git to check for conflict markers and core.whitespace errors, respecting .gitattributes
-  entry: pre_commit_hooks/git-check
-  language: script
-
-- id: git-dirty
-  name: '[Git] Check if the git tree is dirty'
-  description: Detect if git tree contains modified, staged, or untracked files
-  entry: pre_commit_hooks/git-dirty
-  language: script
-
-- id: git-check-added-large-files
-  name: '[Git] Forbid large files'
-  description: >
-    Prevent giant files from being committed
-    Origin: https://github.com/pre-commit/pre-commit-hooks
+###########
+###########
+## CMake ##
+###########
+###########
+- id: cmake-format
+  name: cmake-format
+  description: '[CMake] cmake-format'
+  entry: cmake-format
+  args: [--in-place]
   language: python
-  entry: git-check-added-large-files
-  args:
-    - --maxkb=500
+  types: [cmake]
 
-- id: git-check-merge-conflict
-  name: '[Git] Forbid merge conflicts'
-  description: >
-    Check for files that contain merge conflict strings.
-    Origin: https://github.com/pre-commit/pre-commit-hooks
+- id: cmake-lint
+  name: cmake-lint
+  description: '[CMake] cmake-lint'
+  entry: cmake-lint
   language: python
-  types:
-    - text
-  entry: git-check-merge-conflict
+  types: [cmake]
 
-- id: git-commit-msg
-  name: '[Git] Check the commit message formatting'
+###########
+###########
+## C/C++ ##
+###########
+###########
+- id: c-clang-format
+  name: '[C] Clang format'
   description: >
-    Make sure the commit messages matches the expected format.
+    This hook fix clang format.
+    Origin: https://clang.llvm.org/
+  entry: clang-format
   language: python
-  always_run: true
-  entry: git-commit-msg
-  stages:
-    - commit-msg
+  'types_or': [c++, c, c#, cuda, java, javascript, objective-c, proto]
+  args: ["-style=file", "-i"]
+  require_serial: false
 
 #############
 #############
 ## Generic ##
 #############
 #############
-
-- id: generic-check-byte-order-marker
-  name: '[Generic] Forbid byte-order marker'
-  description: >
-    Forbid files which have a UTF-8 byte-order marker
-    Origin: https://github.com/pre-commit/pre-commit-hooks
-  language: python
-  types:
-    - text
-  entry: generic-check-byte-order-marker
-
-- id: generic-fix-byte-order-marker
-  name: '[Generic] Fix byte-order marker'
-  description: >
-    Fix files which have a UTF-8 byte-order marker
-    Origin: https://github.com/pre-commit/pre-commit-hooks
-  language: python
-  types:
-    - text
-  entry: generic-fix-byte-order-marker
-
 - id: generic-check-case-conflict
   name: '[Generic] Forbid for case conflicts'
   description: >
@@ -154,7 +76,17 @@
   types:
     - text
     - executable
-  entry: generic-check-executables-have-shebangs
+  entry: generic-check-shebang-scripts-are-executable
+
+- id: generic-check-shebang-scripts-are-executable
+  name: '[Generic] check that scripts with shebangs are executable'
+  description: >
+    ensures that (non-binary) files with a shebang are executable.
+    Origin: https://github.com/pre-commit/pre-commit-hooks
+  language: python
+  types:
+    - text
+  entry: generic-check-shebang-scripts-are-executable
 
 - id: generic-check-symlinks
   name: '[Generic] Forbid broken symlinks'
@@ -165,16 +97,6 @@
   types:
     - symlink
   entry: generic-check-symlinks
-
-- id: generic-check-vcs-permalinks
-  name: '[Generic] Ensure vcs permalinks'
-  description: >
-    Ensures that links to vcs websites are permalinks.
-    Origin: https://github.com/pre-commit/pre-commit-hooks
-  language: python
-  types:
-    - text
-  entry: generic-check-vcs-permalinks
 
 - id: generic-detect-private-key
   name: '[Generic] Forbid private keys'
@@ -196,15 +118,15 @@
     - text
   entry: generic-end-of-file-fixer
 
-- id: generic-trailing-whitespace-fixer
-  name: '[Generic] Trim trailing whitespace'
+- id: generic-fix-byte-order-marker
+  name: '[Generic] Fix byte-order marker'
   description: >
-    This hook trims trailing whitespace.
+    Fix files which have a UTF-8 byte-order marker
     Origin: https://github.com/pre-commit/pre-commit-hooks
   language: python
   types:
     - text
-  entry: generic-trailing-whitespace-fixer
+  entry: generic-fix-byte-order-marker
 
 - id: generic-mixed-line-ending
   name: '[Generic] Format all end-lines with LF'
@@ -242,58 +164,74 @@
   args:
     - --whitespaces-count=4
 
-- id: generic-nbsp-forbid
-  name: '[Generic] Forbid nbsp U+00A0'
+- id: generic-trailing-whitespace-fixer
+  name: '[Generic] Trim trailing whitespace'
   description: >
-    Detect unicode non-breaking space character U+00A0 aka M-BM-
-    Origin: https://github.com/Lucas-C/pre-commit-hooks
-  language: system
+    This hook trims trailing whitespace.
+    Origin: https://github.com/pre-commit/pre-commit-hooks
+  language: python
   types:
     - text
-  entry: perl -ne 'print if $m = /\xc2\xa0/; $t ||= $m; END{{exit $t}}'
+  entry: generic-trailing-whitespace-fixer
+  args: [--markdown-linebreak-ext=md]
 
-- id: generic-nbsp-remove
-  name: '[Generic] Remove nbsp U+00A0'
+#########
+#########
+## Git ##
+#########
+#########
+- id: git-check-added-large-files
+  name: '[Git] Forbid large files'
   description: >
-    Remove unicode non-breaking space character U+00A0 aka M-BM-
-    Origin: https://github.com/Lucas-C/pre-commit-hooks
-  language: system
+    Prevent large files from being committed
+    Origin: https://github.com/pre-commit/pre-commit-hooks
+  language: python
+  entry: git-check-added-large-files
+  args:
+    - --maxkb=500
+
+- id: git-check-mailmap
+  name: '[Git] Check mailmap'
+  description: >
+    Detect if an email address needs to be added to mailmap
+    Origin: https://github.com/jumanjihouse/pre-commit-hooks
+  always_run: true
+  exclude: .*
+  language: script
+  entry: pre_commit_hooks/git-check-mailmap
+
+- id: git-check-merge-conflict
+  name: '[Git] Forbid merge conflicts'
+  description: >
+    Check for files that contain merge conflict strings.
+    Origin: https://github.com/pre-commit/pre-commit-hooks
+  language: python
   types:
     - text
-  entry: >
-    perl -pi* -e
-    's/\xc2\xa0/ /g && ($t = 1) && print STDERR $_; END{{exit $t}}'
+  entry: git-check-merge-conflict
 
-- id: generic-en-dashes-forbid
-  name: '[Generic] Forbid en dashes U+2013'
+- id: git-commit-msg
+  name: '[Git] Check the commit message formatting'
   description: >
-    Detect the EXTREMELY confusing unicode character U+2013
-    Origin: https://github.com/Lucas-C/pre-commit-hooks
-  language: system
-  types:
-    - text
-  entry: >
-    perl -ne 'print if $m = /\xe2\x80\x93/; $t ||= $m; END{{exit $t}}'
+    Make sure the commit messages matches the expected format.
+  language: python
+  always_run: true
+  entry: git-commit-msg
+  stages:
+    - commit-msg
 
-- id: generic-en-dashes-remove
-  name: '[Generic] Remove en dashes U+2013'
-  description: >
-    Remove the EXTREMELY confusing unicode character U+2013
-    Origin: https://github.com/Lucas-C/pre-commit-hooks
-  language: system
-  types:
-    - text
-  entry: >
-    perl -pi* -e
-    's/\xe2\x80\x93/-/g && ($t = 1) && print STDERR $_; END{{exit $t}}'
-
+- id: git-forbid-binary
+  name: '[Git] Forbid binaries'
+  description: Forbid binary files from being committed
+  entry: pre_commit_hooks/git-forbid-binary
+  language: script
+  types: ['binary']
 
 ##########
 ##########
 ## JSON ##
 ##########
 ##########
-
 - id: json-check-syntax
   name: '[Json] Check syntax'
   description: >
@@ -316,13 +254,11 @@
   args:
     - --indent=2
 
-
 ############
 ############
 ## Python ##
 ############
 ############
-
 - id: python-check-ast
   name: '[Python] Check python ast'
   description: >
@@ -382,6 +318,17 @@
     - python
   entry: python-fix-encoding-pragma --remove
 
+- id: python-name-tests-test
+  name: '[Python] Check tests filename'
+  description: >
+    Verify that test files are named correctly
+    Origin: https://github.com/pre-commit/pre-commit-hooks
+  language: python
+  types:
+    - python
+  files: (^|/)tests/.+\.py$
+  entry: python-name-tests-test --pytest-test-first
+
 - id: python-requirements-txt-fixer
   name: '[Python] Fix requirements.txt'
   description: >
@@ -391,86 +338,15 @@
   files: requirements.*\.txt$
   entry: python-requirements-txt-fixer
 
-- id: python-safetydb
-  name: '[Python] Check requirements.txt safety'
+- id: python-pydocstyle
+  name: '[Python] Run pydocstyle'
   description: >
-    Analyze your Python requirements for known security vulnerabilities.
-    Origin: https://github.com/Lucas-C/pre-commit-hooks-safety
-  language: python
-  additional_dependencies:
-    - safety
-  files: requirements.*\.txt$
-  entry: python-safety-checks
-
-- id: python-pyupgrade
-  name: '[Python] Upgrade syntax'
-  description: >
-    Run pyupgrade
-    Origin: https://github.com/asottile/pyupgrade
-  language: python
-  additional_dependencies:
-    - pyupgrade
-  types:
-    - python
-  entry: pyupgrade
-
-- id: python-isort-config
-  name: '[Python] Demand isort config'
-  description: >
-    Demand the presence of .isort.cfg configuration file
+    Run pydocstyle
+    Origin: https://github.com/PyCQA/pydocstyle
   language: python
   types:
     - python
-  always_run: true
-  entry: python-isort-config
-  pass_filenames: false
-
-- id: python-isort-seed-config
-  name: '[Python] Seed isort known_third_party'
-  description: >
-    Statically populate the known_third_party isort setting
-    Origin: https://github.com/asottile/seed-isort-config
-  language: python
-  additional_dependencies:
-    - seed-isort-config
-  entry: seed-isort-config
-  pass_filenames: false
-
-- id: python-isort
-  name: '[Python] Run isort'
-  description: >
-    Run isort formatter with black-compatible configuration
-    Origin: https://github.com/timothycrosley/isort
-  language: python
-  additional_dependencies:
-    - isort
-  types:
-    - python
-  require_serial: true
-  entry: isort
-  args:
-    - --multi-line=3
-    - --trailing-comma
-    - --force-grid-wrap=0
-    - --use-parentheses
-    - --line-width=100
-    - --profile=black
-
-- id: python-black
-  name: '[Python] Run black'
-  description: >
-    Run Black formatter
-    Origin: https://github.com/psf/black
-  language: python
-  additional_dependencies:
-    - black
-  types:
-    - python
-  require_serial: true
-  entry: black
-  args:
-    - --line-length=100
-    - --skip-string-normalization
+  entry: pydocstyle
 
 - id: python-pylint-config
   name: '[Python] Demand pylint config'
@@ -488,136 +364,86 @@
   description: >
     Run pylint
     Origin: https://github.com/PyCQA/pylint
-  language: system
-  types:
-    - python
+  language: python
+  require_serial: true
+  types: [python]
   entry: pylint
-
-- id: python-pydocstyle
-  name: '[Python] Run pydocstyle'
-  description: >
-    Run pydocstyle
-    Origin: https://github.com/PyCQA/pydocstyle
-  language: python
-  additional_dependencies:
-    - pydocstyle
-  types:
-    - python
-  entry: pydocstyle
-
-- id: python-bandit
-  name: '[Python] Run bandit'
-  description: >
-    Run bandit
-    Origin: https://github.com/PyCQA/bandit
-  language: python
-  additional_dependencies:
-    - bandit
-  types:
-    - python
-  entry: bandit --skip=B404,B602,B603,B605,B606
-
-- id: python-setup-cfg-fmt
-  name: '[Python] Format setup.cfg'
-  description: >
-    Apply a consistent format to `setup.cfg` files
-    Origin: https://github.com/asottile/setup-cfg-fmt
-  language: python
-  additional_dependencies:
-    - setup-cfg-fmt
-  files: '(^|/)setup\.cfg$'
-  entry: setup-cfg-fmt
 
 ###########
 ###########
 ## Shell ##
 ###########
 ###########
-
 - id: shell-check-syntax
-  name: '[Shell] Check syntax correctness'
+  name: '[Shell] Check shell style with shfmt'
   description: >
     Check Shell scripts syntax correctness
-    Origin: https://github.com/Lucas-C/pre-commit-hooks
-  language: system
-  types:
-    - shell
-  entry: bash -n
-
-- id: shell-check
-  name: '[Shell] Lint scripts'
-  description: >
-    Shell scripts conform to shellcheck
-    Origin: https://github.com/jumanjihouse/pre-commit-hooks#shellcheck
-  language: system
-  types:
-    - shell
-  entry: shellcheck
-  args:
-    - --exclude=SC1091
+    Origin: https://github.com/jumanjihouse/pre-commit-hooks#shfmt
+  entry: shfmt
+  language: python
+  types: [shell]
+  args: ['-w', '-i', '2'] # write file back
+  require_serial: true # shfmt can detect sourcing this way
 
 - id: shell-script-must-have-extension
   name: '[Shell] Non-executable shell script filename ends in .sh'
-  description: Non-executable shell script filename ends in .sh
+  description: >
+    Non-executable shell script filename ends in .sh
+    Origin: https://github.com/jumanjihouse/pre-commit-hooks
   entry: pre_commit_hooks/shell-script-must-have-extension
   language: script
   types: [shell, non-executable]
 
 - id: shell-script-must-not-have-extension
   name: '[Shell] Executable shell script omits the filename extension'
-  description: Executable shell script omits the filename extension
+  description: >
+    Executable shell script omits the filename extension
+    Origin: https://github.com/jumanjihouse/pre-commit-hooks
   entry: pre_commit_hooks/shell-script-must-not-have-extension
   language: script
   types: [shell, executable]
 
-- id: shell-bashate
-  name: '[Shell] Lint scripts'
+- id: shell-script-style
+  name: '[Shell] Check scripts conform to shellcheck'
   description: >
-    This hook runs bashate for linting shell scripts.
-    Origin: https://github.com/openstack/bashate
+    Shell scripts conform to shellcheck
+    Origin: https://github.com/jumanjihouse/pre-commit-hooks#shellcheck
+  entry: shellcheck
   language: python
-  additional_dependencies:
-    - bashate
-  types:
-    - shell
-  entry: bashate
-
-- id: shell-beautysh
-  name: '[Shell] Format scripts'
-  description: >
-    This hook runs beautysh for beautifying shell scripts.
-    Origin: https://github.com/lovesegfault/beautysh
-  language: python
-  additional_dependencies:
-    - beautysh
-  types:
-    - shell
-  entry: beautysh
+  types: [shell]
+  require_serial: true # shellcheck can detect sourcing this way
 
 ##########
 ##########
-## Toml ##
+## TOML ##
 ##########
 ##########
-
 - id: toml-check-syntax
   name: '[Toml] Check syntax'
   description: >
     This hook checks toml files for parseable syntax.
     Origin: https://github.com/pre-commit/pre-commit-hooks
   language: python
-  additional_dependencies:
-    - toml
   types:
     - toml
   entry: toml-check-syntax
 
-#########
-#########
-## Xml ##
-#########
-#########
+- id: toml-pretty-format
+  name: '[Toml] Pretty format'
+  description: >
+    This hook sets a standard for formatting TOML files.
+    Origin: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  language: python
+  types:
+    - toml
+  args: [--autofix]
+  entry: toml-pretty-format 
 
+#########
+#########
+## XML ##
+#########
+#########
 - id: xml-check-syntax
   name: '[Xml] Check syntax'
   description: >
@@ -630,100 +456,26 @@
 
 ##########
 ##########
-## Yaml ##
+## YAML ##
 ##########
 ##########
-
 - id: yaml-check-syntax
   name: '[Yaml] Check syntax'
   description: >
     This hook checks yaml files for parseable syntax.
     Origin: https://github.com/pre-commit/pre-commit-hooks
   language: python
-  additional_dependencies:
-    - ruamel.yaml
   types:
     - yaml
   entry: yaml-check-syntax --unsafe
 
-- id: yaml-yamllint
-  name: '[Yaml] Lint files'
+- id: yaml-pretty-format
+  name: '[Yaml] Pretty format'
   description: >
-    This hook runs yamllint.
-    Origin: https://github.com/adrienverge/yamllint
+    This hook sets a standard for formatting Yaml files.
+    Origin: https://jumanjihouse/pre-commit-hook-yamlfmt
   language: python
-  additional_dependencies:
-    - yamllint
-  types:
-    - yaml
-  entry: yamllint
+  types: [ yaml ]
+  args: [--mapping, '2', --sequence, '4', --offset, '2', --width, '150', '--implicit_start', '--implicit_end', '--preserve-quotes']
+  entry: yaml-pretty-format
 
-
-#########
-#########
-## C++ ##
-#########
-#########
-
-- id: c-clang-format
-  name: '[C] Clang format'
-  description: >
-    This hook fix clang format.
-    Origin: https://clang.llvm.org/
-  entry: clang-format
-  language: python
-  'types_or': [c++, c, c#, cuda, java, javascript, objective-c, proto]
-  args: ["-style=file", "-i"]
-  require_serial: false
-  additional_dependencies: []
-  minimum_pre_commit_version: '2.9.2'
-
-###########
-###########
-## CMake ##
-###########
-###########
-
-- id: cmake-format
-  name: cmake-format
-  description: '[CMake] cmake-format'
-  entry: cmake-format
-  args: [--in-place]
-  language: python
-  types: [cmake]
-
-- id: cmake-lint
-  name: cmake-lint
-  description: '[CMake] cmake-lint'
-  entry: cmake-lint
-  language: python
-  types: [cmake]
-
-#############
-#############
-## DOXYGEN ##
-#############
-#############
-
-- id: doxygen-check-syntax
-  name: doxygen-check-syntax
-  description: '[Doxygen] Documentation linter'
-  entry: doxygen-check-syntax
-  language: python
-  types: [file]
-
-#############
-#############
-## ANSIBLE ##
-#############
-#############
-
-- id: ansible-lint
-  name: Ansible-lint
-  description: '[Ansible] Ansible linter'
-  entry: python3 -m ansiblelint -v --force-color
-  language: python
-  pass_filenames: false
-  always_run: true
-  additional_dependencies:
-    - ansible-core>=2.13.3

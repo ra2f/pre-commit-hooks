@@ -1,10 +1,9 @@
+from __future__ import annotations
+
 import argparse
 import io
 import re
-import sys
 import tokenize
-from typing import List
-from typing import Optional
 from typing import Sequence
 
 START_QUOTE_RE = re.compile('^[a-zA-Z]*"')
@@ -19,11 +18,13 @@ def handle_match(token_text: str) -> str:
         meat = token_text[match.end():-1]
         if '"' in meat or "'" in meat:
             return token_text
-        return match.group().replace('"', "'") + meat + "'"
-    return token_text
+        else:
+            return match.group().replace('"', "'") + meat + "'"
+    else:
+        return token_text
 
 
-def get_line_offsets_by_line_no(src: str) -> List[int]:
+def get_line_offsets_by_line_no(src: str) -> list[int]:
     # Padded so we can index with line number
     offsets = [-1, 0]
     for line in src.splitlines(True):
@@ -31,9 +32,9 @@ def get_line_offsets_by_line_no(src: str) -> List[int]:
     return offsets
 
 
-def fix_strings(filename: str) -> int:  # pylint: disable=too-many-locals
-    with open(filename, encoding='UTF-8', newline='') as file_handler:
-        contents = file_handler.read()
+def fix_strings(filename: str) -> int:
+    with open(filename, encoding='UTF-8', newline='') as f:
+        contents = f.read()
     line_offsets = get_line_offsets_by_line_no(contents)
 
     # Basically a mutable string
@@ -45,17 +46,21 @@ def fix_strings(filename: str) -> int:  # pylint: disable=too-many-locals
     for token_type, token_text, (srow, scol), (erow, ecol), _ in tokens:
         if token_type == tokenize.STRING:
             new_text = handle_match(token_text)
-            splitcontents[line_offsets[srow] + scol:line_offsets[erow] + ecol] = new_text
+            splitcontents[
+                line_offsets[srow] + scol:
+                line_offsets[erow] + ecol
+            ] = new_text
 
     new_contents = ''.join(splitcontents)
     if contents != new_contents:
-        with open(filename, 'w', encoding='UTF-8', newline='') as file_handler:
-            file_handler.write(new_contents)
+        with open(filename, 'w', encoding='UTF-8', newline='') as f:
+            f.write(new_contents)
         return 1
-    return 0
+    else:
+        return 0
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('filenames', nargs='*', help='Filenames to fix')
     args = parser.parse_args(argv)
@@ -72,4 +77,4 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(main())

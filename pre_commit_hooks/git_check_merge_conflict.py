@@ -1,28 +1,34 @@
+from __future__ import annotations
+
 import argparse
 import os.path
-import sys
-from typing import Optional
 from typing import Sequence
+
+from pre_commit_hooks.utils import cmd_output
+
 
 CONFLICT_PATTERNS = [
     b'<<<<<<< ',
     b'======= ',
+    b'=======\r\n',
     b'=======\n',
     b'>>>>>>> ',
 ]
 
 
-def is_in_merge() -> int:
+def is_in_merge() -> bool:
+    git_dir = cmd_output('git', 'rev-parse', '--git-dir').rstrip()
     return (
-        os.path.exists(os.path.join('.git', 'MERGE_MSG')) and (
-            os.path.exists(os.path.join('.git', 'MERGE_HEAD')) or
-            os.path.exists(os.path.join('.git', 'rebase-apply')) or
-            os.path.exists(os.path.join('.git', 'rebase-merge'))
+        os.path.exists(os.path.join(git_dir, 'MERGE_MSG')) and
+        (
+            os.path.exists(os.path.join(git_dir, 'MERGE_HEAD')) or
+            os.path.exists(os.path.join(git_dir, 'rebase-apply')) or
+            os.path.exists(os.path.join(git_dir, 'rebase-merge'))
         )
     )
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('filenames', nargs='*')
     parser.add_argument('--assume-in-merge', action='store_true')
@@ -34,12 +40,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     retcode = 0
     for filename in args.filenames:
         with open(filename, 'rb') as inputfile:
-            for i, line in enumerate(inputfile):
+            for i, line in enumerate(inputfile, start=1):
                 for pattern in CONFLICT_PATTERNS:
                     if line.startswith(pattern):
                         print(
-                            f'Merge conflict string "{pattern.decode()}" '
-                            f'found in {filename}:{i + 1}',
+                            f'{filename}:{i}: Merge conflict string '
+                            f'{pattern.strip().decode()!r} found',
                         )
                         retcode = 1
 
@@ -47,4 +53,4 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(main())

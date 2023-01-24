@@ -1,30 +1,27 @@
+from __future__ import annotations
+
 import argparse
 import json
-from difflib import unified_diff
 import sys
-from typing import List
+from difflib import unified_diff
 from typing import Mapping
-from typing import Optional
 from typing import Sequence
-from typing import Tuple
-from typing import Union
 
 
 def _get_pretty_format(
-    contents: str,
-    indent: str,
-    ensure_ascii: bool = True,
-    sort_keys: bool = True,
-    top_keys: Sequence[str] = ()
+        contents: str,
+        indent: str,
+        ensure_ascii: bool = True,
+        sort_keys: bool = True,
+        top_keys: Sequence[str] = (),
 ) -> str:
-    def pairs_first(pairs: Sequence[Tuple[str, str]]) -> Mapping[str, str]:
+    def pairs_first(pairs: Sequence[tuple[str, str]]) -> Mapping[str, str]:
         before = [pair for pair in pairs if pair[0] in top_keys]
         before = sorted(before, key=lambda x: top_keys.index(x[0]))
         after = [pair for pair in pairs if pair[0] not in top_keys]
         if sort_keys:
             after.sort()
         return dict(before + after)
-
     json_pretty = json.dumps(
         json.loads(contents, object_pairs_hook=pairs_first),
         indent=indent,
@@ -34,21 +31,21 @@ def _get_pretty_format(
 
 
 def _autofix(filename: str, new_contents: str) -> None:
-    print('Fixing file {}'.format(filename))
-    with open(filename, 'w', encoding='UTF-8') as file_handler:
-        file_handler.write(new_contents)
+    print(f'Fixing file {filename}')
+    with open(filename, 'w', encoding='UTF-8') as f:
+        f.write(new_contents)
 
 
-def parse_num_to_int(string: str) -> Union[int, str]:
+def parse_num_to_int(s: str) -> int | str:
     """Convert string numbers to int, leaving strings as is."""
     try:
-        return int(string)
+        return int(s)
     except ValueError:
-        return string
+        return s
 
 
-def parse_topkeys(string: str) -> List[str]:
-    return string.split(',')
+def parse_topkeys(s: str) -> list[str]:
+    return s.split(',')
 
 
 def get_diff(source: str, target: str, file: str) -> str:
@@ -58,7 +55,7 @@ def get_diff(source: str, target: str, file: str) -> str:
     return ''.join(diff)
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--autofix',
@@ -80,8 +77,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         action='store_true',
         dest='no_ensure_ascii',
         default=False,
-        help=('Do NOT convert non-ASCII characters to Unicode escape sequences '
-              '(\\uXXXX)'),
+        help=(
+            'Do NOT convert non-ASCII characters to Unicode escape sequences '
+            '(\\uXXXX)'
+        ),
     )
     parser.add_argument(
         '--no-sort-keys',
@@ -103,34 +102,32 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     status = 0
 
     for json_file in args.filenames:
-        with open(json_file, encoding='UTF-8') as file_handler:
-            contents = file_handler.read()
+        with open(json_file, encoding='UTF-8') as f:
+            contents = f.read()
 
         try:
             pretty_contents = _get_pretty_format(
-                contents,
-                args.indent,
-                ensure_ascii=not args.no_ensure_ascii,
-                sort_keys=not args.no_sort_keys,
-                top_keys=args.top_keys,
+                contents, args.indent, ensure_ascii=not args.no_ensure_ascii,
+                sort_keys=not args.no_sort_keys, top_keys=args.top_keys,
             )
-
-            if contents != pretty_contents:
-                if args.autofix:
-                    _autofix(json_file, pretty_contents)
-                else:
-                    print(
-                        get_diff(contents, pretty_contents, json_file),
-                        end='',
-                    )
-
-                status = 1
         except ValueError:
-            print(f'Input File {json_file} is not a valid JSON, consider using ' f'check-json', )
+            print(
+                f'Input File {json_file} is not a valid JSON, consider using '
+                f'check-json',
+            )
             return 1
+
+        if contents != pretty_contents:
+            if args.autofix:
+                _autofix(json_file, pretty_contents)
+            else:
+                diff_output = get_diff(contents, pretty_contents, json_file)
+                sys.stdout.buffer.write(diff_output.encode())
+
+            status = 1
 
     return status
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(main())

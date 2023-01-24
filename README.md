@@ -24,60 +24,49 @@ repos:
   - repo: https://github.com/ra2f/pre-commit-hooks
     rev: a.b.c  # Use the ref you want to point at
     hooks:
-      - id: git-check-mailmap
-      - id: git-forbid-binary
-      - id: git-check
-      - id: git-dirty
-      - id: git-check-added-large-files
-        args: ['--maxkb=100']
-      - id: git-check-merge-conflict
-      - id: git-commit-msg
-      - id: generic-check-byte-order-marker
-      - id: generic-fix-byte-order-marker
+      - id: ansible-lint
+      - id: cmake-format
+      - id: cmake-lint
+      - id: c-clang-format
       - id: generic-check-case-conflict
       - id: generic-check-executables-have-shebangs
+      - id: generic-check-shebang-scripts-are-executable
       - id: generic-check-symlinks
-      - id: generic-check-vcs-permalinks
       - id: generic-detect-private-key
       - id: generic-end-of-file-fixer
-      - id: generic-trailing-whitespace-fixer
+      - id: generic-fix-byte-order-marker
       - id: generic-mixed-line-ending
       - id: generic-tabs-forbid
       - id: generic-tabs-remove
-      - id: generic-nbsp-forbid
-      - id: generic-nbsp-remove
-      - id: generic-en-dashes-forbid
-      - id: generic-en-dashes-remove
+      - id: generic-trailing-whitespace-fixer
+      - id: git-check-added-large-files
+        args: ['--maxkb=100']
+      - id: git-check-mailmap
+      - id: git-check-merge-conflict
+      - id: git-commit-msg
+      - id: git-forbid-binary
       - id: json-check-syntax
       - id: json-pretty-format
-      - id: shell-check-syntax
-      - id: shell-check
-      - id: shell-script-must-have-extension
-      - id: shell-script-must-not-have-extension
-      - id: shell-bashate
-      - id: shell-beautysh
-      - id: toml-check-syntax
-      - id: xml-check-syntax
-      - id: yaml-check-syntax
-      - id: yaml-yamllint
-      - id: cmake-format
-      - id: cmake-lint
       - id: python-check-ast
+      - id: python-check-builtin-literals
       - id: python-check-docstring-first
       - id: python-debug-statements
       - id: python-double-quote-string-fixer
       - id: python-fix-encoding-pragma
-      - id: python-requirements-txt-fixer
-      - id: python-safetydb
-      - id: python-isort-config
-      - id: python-isort-seed-config
-      - id: python-isort
-      - id: python-black
-      - id: python-pylint-config
+      - id: python-name-tests-test
+      - id: python-pydocstyle
       - id: python-pylint
-      - id: python-setup-cfg-fmt
-      - id: doxygen-check-syntax
-      - id: ansible-lint
+      - id: python-pylint-config
+      - id: python-requirements-txt-fixer
+      - id: shell-check-syntax
+      - id: shell-script-must-have-extension
+      - id: shell-script-must-not-have-extension
+      - id: shell-script-style
+      - id: toml-check-syntax
+      - id: toml-pretty-format
+      - id: xml-check-syntax
+      - id: yaml-check-syntax
+      - id: yaml-pretty-format
 ```
 
 ## Two ways to invoke pre-commit

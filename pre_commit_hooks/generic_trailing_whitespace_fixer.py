@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 import argparse
 import os
-import sys
-from typing import Optional
 from typing import Sequence
 
 
-def _fix_file(filename: str, is_markdown: bool, chars: Optional[bytes]) -> bool:
+def _fix_file(
+        filename: str,
+        is_markdown: bool,
+        chars: bytes | None,
+) -> bool:
     with open(filename, mode='rb') as file_processed:
         lines = file_processed.readlines()
     newlines = [_process_line(line, is_markdown, chars) for line in lines]
@@ -14,10 +18,15 @@ def _fix_file(filename: str, is_markdown: bool, chars: Optional[bytes]) -> bool:
             for line in newlines:
                 file_processed.write(line)
         return True
-    return False
+    else:
+        return False
 
 
-def _process_line(line: bytes, is_markdown: bool, chars: Optional[bytes]) -> bytes:
+def _process_line(
+        line: bytes,
+        is_markdown: bool,
+        chars: bytes | None,
+) -> bytes:
     if line[-2:] == b'\r\n':
         eol = b'\r\n'
         line = line[:-2]
@@ -32,7 +41,7 @@ def _process_line(line: bytes, is_markdown: bool, chars: Optional[bytes]) -> byt
     return line.rstrip(chars) + eol
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--no-markdown-linebreak-ext',
@@ -67,7 +76,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         parser.error('--markdown-linebreak-ext requires a non-empty argument')
     all_markdown = '*' in md_args
     # normalize extensions; split at ',', lowercase, and force 1 leading '.'
-    md_exts = ['.' + x.lower().lstrip('.') for x in ','.join(md_args).split(',')]
+    md_exts = [
+        '.' + x.lower().lstrip('.') for x in ','.join(md_args).split(',')
+    ]
 
     # reject probable "eaten" filename as extension: skip leading '.' with [1:]
     for ext in md_exts:
@@ -81,12 +92,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     return_code = 0
     for filename in args.filenames:
         _, extension = os.path.splitext(filename.lower())
-        mkdown = all_markdown or extension in md_exts
-        if _fix_file(filename, mkdown, chars):
+        md = all_markdown or extension in md_exts
+        if _fix_file(filename, md, chars):
             print(f'Fixing {filename}')
             return_code = 1
     return return_code
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(main())

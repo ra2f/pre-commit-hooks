@@ -1,45 +1,69 @@
+from __future__ import annotations
+
 import argparse
-import sys
+import re
 from typing import IO
-from typing import List
-from typing import Optional
 from typing import Sequence
+
 
 PASS = 0
 FAIL = 1
 
 
 class Requirement:
+    UNTIL_COMPARISON = re.compile(b'={2,3}|!=|~=|>=?|<=?')
+    UNTIL_SEP = re.compile(rb'[^;\s]+')
+
     def __init__(self) -> None:
-        self.value: Optional[bytes] = None
-        self.comments: List[bytes] = []
+        self.value: bytes | None = None
+        self.comments: list[bytes] = []
 
     @property
     def name(self) -> bytes:
-        if self.value is None:
-            raise RuntimeError(self.value)
+        assert self.value is not None, self.value
+        name = self.value.lower()
         for egg in (b'#egg=', b'&egg='):
-            if egg in self.value:  # pylint: disable=unsupported-membership-test
-                return self.value.lower().partition(egg)[-1]
+            if egg in self.value:
+                return name.partition(egg)[-1]
 
-        return self.value.lower().partition(b'==')[0]
+        m = self.UNTIL_SEP.match(name)
+        assert m is not None
 
-    def __lt__(self, requirement: 'Requirement') -> int:
+        name = m.group()
+        m = self.UNTIL_COMPARISON.search(name)
+        if not m:
+            return name
+
+        return name[:m.start()]
+
+    def __lt__(self, requirement: Requirement) -> bool:
         # \n means top of file comment, so always return True,
         # otherwise just do a string comparison with value.
-        if self.value is None:
-            raise RuntimeError(self.value)
+        assert self.value is not None, self.value
         if self.value == b'\n':
             return True
-        if requirement.value == b'\n':
+        elif requirement.value == b'\n':
             return False
-        return self.name < requirement.name
+        else:
+            return self.name < requirement.name
+
+    def is_complete(self) -> bool:
+        return (
+            self.value is not None and
+            not self.value.rstrip(b'\r\n').endswith(b'\\')
+        )
+
+    def append_value(self, value: bytes) -> None:
+        if self.value is not None:
+            self.value += value
+        else:
+            self.value = value
 
 
-def fix_requirements(file: IO[bytes]) -> int:  # pylint: disable=too-many-branches
-    requirements: List[Requirement] = []
-    before = list(file)
-    after: List[bytes] = []
+def fix_requirements(f: IO[bytes]) -> int:
+    requirements: list[Requirement] = []
+    before = list(f)
+    after: list[bytes] = []
 
     before_string = b''.join(before)
 
@@ -56,7 +80,7 @@ def fix_requirements(file: IO[bytes]) -> int:  # pylint: disable=too-many-branch
         # If the most recent requirement object has a value, then it's
         # time to start building the next requirement object.
 
-        if not requirements or requirements[-1].value is not None:
+        if not len(requirements) or requirements[-1].is_complete():
             requirements.append(Requirement())
 
         requirement = requirements[-1]
@@ -64,14 +88,17 @@ def fix_requirements(file: IO[bytes]) -> int:  # pylint: disable=too-many-branch
         # If we see a newline before any requirements, then this is a
         # top of file comment.
         if len(requirements) == 1 and line.strip() == b'':
-            if (requirement.comments and requirement.comments[0].startswith(b'#')):
+            if (
+                    len(requirement.comments) and
+                    requirement.comments[0].startswith(b'#')
+            ):
                 requirement.value = b'\n'
             else:
                 requirement.comments.append(line)
-        elif line.startswith(b'#') or line.strip() == b'':
+        elif line.lstrip().startswith(b'#') or line.strip() == b'':
             requirement.comments.append(line)
         else:
-            requirement.value = line
+            requirement.append_value(line)
 
     # if a file ends in a comment, preserve it at the end
     if requirements[-1].value is None:
@@ -81,12 +108,14 @@ def fix_requirements(file: IO[bytes]) -> int:  # pylint: disable=too-many-branch
 
     # find and remove pkg-resources==0.0.0
     # which is automatically added by broken pip package under Debian
-    requirements = [req for req in requirements if req.value != b'pkg-resources==0.0.0\n']
+    requirements = [
+        req for req in requirements
+        if req.value != b'pkg-resources==0.0.0\n'
+    ]
 
     for requirement in sorted(requirements):
         after.extend(requirement.comments)
-        if not requirement.value:
-            raise RuntimeError(requirement.value)
+        assert requirement.value, requirement.value
         after.append(requirement.value)
     after.extend(rest)
 
@@ -94,13 +123,14 @@ def fix_requirements(file: IO[bytes]) -> int:  # pylint: disable=too-many-branch
 
     if before_string == after_string:
         return PASS
-    file.seek(0)
-    file.write(after_string)
-    file.truncate()
-    return FAIL
+    else:
+        f.seek(0)
+        f.write(after_string)
+        f.truncate()
+        return FAIL
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('filenames', nargs='*', help='Filenames to fix')
     args = parser.parse_args(argv)
@@ -120,4 +150,4 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(main())
