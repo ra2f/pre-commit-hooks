@@ -48,7 +48,7 @@
     Origin: https://clang.llvm.org/
   entry: clang-format
   language: python
-  'types_or': [c++, c, c#, cuda, java, javascript, objective-c, proto]
+  'types_or': [c++, c, objective-c]
   args: ["-style=file", "-i"]
   require_serial: false
 
