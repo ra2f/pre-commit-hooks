@@ -314,20 +314,6 @@
   args:
     - --indent=2
 
-##############
-##############
-## Markdown ##
-##############
-##############
-
-- id: markdown-check-lint
-  name: PyMarkdown
-  description: "PyMarkdown - GitHub Flavored Markdown and CommonMark Compliant Linter"
-  language: python
-  language_version: python3
-  entry: pymarkdown
-  args: [scan]
-  types: [markdown]
 
 ############
 ############
