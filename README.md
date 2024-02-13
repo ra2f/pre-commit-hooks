@@ -60,6 +60,8 @@ repos:
       - id: xml-check-syntax
       - id: yaml-check-syntax
       - id: yaml-yamllint
+      - id: cmake-format
+      - id: cmake-lint
 ```
 
 ## Two ways to invoke pre-commit
