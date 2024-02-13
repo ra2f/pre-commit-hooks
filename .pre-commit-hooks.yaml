@@ -125,6 +125,16 @@
     - text
   entry: generic-check-byte-order-marker
 
+- id: generic-fix-byte-order-marker
+  name: '[Generic] Fix byte-order marker'
+  description: >
+    Fix files which have a UTF-8 byte-order marker
+    Origin: https://github.com/pre-commit/pre-commit-hooks
+  language: python
+  types:
+    - text
+  entry: generic-fix-byte-order-marker
+
 - id: generic-check-case-conflict
   name: '[Generic] Forbid for case conflicts'
   description: >
