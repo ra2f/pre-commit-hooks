@@ -196,25 +196,17 @@
     - text
   entry: generic-trailing-whitespace-fixer
 
-- id: generic-crlf-forbid
-  name: '[Generic] Forbid CRLF end-lines'
+- id: generic-mixed-line-ending
+  name: '[Generic] Format all end-lines with LF'
   description: >
-    Forbid files containing CRLF end-lines to be committed
-    Origin: https://github.com/Lucas-C/pre-commit-hooks
+    Format files containing CRLF/CR end-lines to LF
+    Origin: https://github.com/pre-commit/pre-commit-hooks
   language: python
   types:
     - text
-  entry: generic-crlf-forbid
-
-- id: generic-crlf-remove
-  name: '[Generic] Replace CRLF with LF'
-  description: >
-    Replace CRLF end-lines by LF ones before committing
-    Origin: https://github.com/Lucas-C/pre-commit-hooks
-  language: python
-  types:
-    - text
-  entry: generic-crlf-remove
+  entry: generic-mixed-line-ending
+  args:
+    - --fix=lf
 
 - id: generic-tabs-forbid
   name: '[Generic] Forbid tabs'

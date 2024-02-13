@@ -40,8 +40,7 @@ repos:
       - id: generic-detect-private-key
       - id: generic-end-of-file-fixer
       - id: generic-trailing-whitespace-fixer
-      - id: generic-crlf-forbid
-      - id: generic-crlf-remove
+      - id: generic-mixed-line-ending
       - id: generic-tabs-forbid
       - id: generic-tabs-remove
       - id: generic-nbsp-forbid
