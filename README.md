@@ -111,7 +111,3 @@ You need to update the `.pylintrc` with:
     except ImportError: pass
     else: pylint_venv.inithook()
 ```
-
-It is enabled by default in the configuration of this repo.
-You can find more information on the 
-[pylint-venv repository](https://github.com/jgosmann/pylint-venv).
