@@ -93,21 +93,3 @@ If you want to run the checks on-demand (outside of git hooks), run:
 ```
   pre-commit run --all-files --verbose
 ```
-
-
-## Notes Pylint
-
-If you are using any virtual environment in your repository,
-you need to update the `.pylintrc`
-The default Pylint binary is available in a dedicated Python environment
-created by pre-commit.
-
-This dedicated environment does not has access to your development environment.
-You need to update the `.pylintrc` with:
-
-```
-  init-hook=
-    try: import pylint_venv
-    except ImportError: pass
-    else: pylint_venv.inithook()
-```
