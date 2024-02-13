@@ -1,0 +1,5 @@
+- name: Doxygen documentation linter
+  pattern: '@brief (?![A-Z].*\.)'
+  hint: Comment must start with uppercase letter (A-Z) and end with a dot (.)!
+  filePattern: .*\.(cpp|h)
+  error: true

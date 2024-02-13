@@ -325,7 +325,7 @@ method-naming-style=snake_case
 # Regular expression matching correct method names
 method-rgx=[a-z_][a-z0-9_]{2,}$
 
-# Regular expression matching correct type variable names
+# Regular expression which can overwrite the naming style set by typevar-naming-style.
 #typevar-rgx=
 
 # Regular expression which should only match function or class names that do
