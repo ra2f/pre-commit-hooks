@@ -572,7 +572,6 @@ def main():
         with CONFIG_PATH.open('w') as cfg_fh:
             cfg_fh.write(DEFAULT_CONTENT)
         print(f'{CONFIG_PATH} was created with a default configuration.')
-        print('Please add it to your commit.')
         return 1
 
 

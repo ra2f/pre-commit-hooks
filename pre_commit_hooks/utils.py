@@ -30,3 +30,8 @@ def zsplit(s: str) -> list[str]:
         return s.split('\0')
     else:
         return []
+
+def remove_trailing_whitespaces_and_set_new_line_ending(string: str) -> str:
+    return "{content}\n".format(
+        content="\n".join(line.rstrip() for line in string.splitlines()).rstrip(),
+    )

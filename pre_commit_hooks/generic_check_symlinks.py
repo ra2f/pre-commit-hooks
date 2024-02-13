@@ -1,11 +1,11 @@
+from __future__ import annotations
+
 import argparse
 import os.path
-import sys
-from typing import Optional
 from typing import Sequence
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description='Checks for broken symlinks.')
     parser.add_argument('filenames', nargs='*', help='Filenames to check')
     args = parser.parse_args(argv)
@@ -14,7 +14,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     for filename in args.filenames:
         if (
-            os.path.islink(filename) and not os.path.exists(filename)
+                os.path.islink(filename) and
+                not os.path.exists(filename)
         ):  # pragma: no cover (symlink support required)
             print(f'{filename}: Broken symlink')
             retv = 1
@@ -23,4 +24,4 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(main())

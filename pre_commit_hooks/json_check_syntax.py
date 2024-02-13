@@ -1,26 +1,38 @@
+from __future__ import annotations
+
 import argparse
 import json
-import sys
-from typing import Optional
+from typing import Any
 from typing import Sequence
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def raise_duplicate_keys(
+        ordered_pairs: list[tuple[str, Any]],
+) -> dict[str, Any]:
+    d = {}
+    for key, val in ordered_pairs:
+        if key in d:
+            raise ValueError(f'Duplicate key: {key}')
+        else:
+            d[key] = val
+    return d
+
+
+def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('filenames', nargs='*', help='Filenames to check.')
     args = parser.parse_args(argv)
 
     retval = 0
     for filename in args.filenames:
-        with open(filename, 'rb') as file_handler:
+        with open(filename, 'rb') as f:
             try:
-                json.load(file_handler)
-            # TODO: need UnicodeDecodeError?
-            except (ValueError, UnicodeDecodeError) as exc:
-                print('{}: Failed to json decode ({})'.format(filename, exc))
+                json.load(f, object_pairs_hook=raise_duplicate_keys)
+            except ValueError as exc:
+                print(f'{filename}: Failed to json decode ({exc})')
                 retval = 1
     return retval
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    raise SystemExit(main())
