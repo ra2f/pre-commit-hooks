@@ -76,6 +76,7 @@ repos:
       - id: python-pylint-config
       - id: python-pylint
       - id: python-setup-cfg-fmt
+      - id: docker-lint
 
 ```
 
