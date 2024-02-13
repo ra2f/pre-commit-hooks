@@ -77,6 +77,7 @@ repos:
       - id: python-pylint
       - id: python-setup-cfg-fmt
       - id: doxygen-check-syntax
+      - id: ansible-lint
 ```
 
 ## Two ways to invoke pre-commit
