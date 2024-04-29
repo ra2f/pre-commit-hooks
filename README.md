@@ -55,8 +55,9 @@ repos:
       - id: python-fix-encoding-pragma
       - id: python-name-tests-test
       - id: python-pydocstyle
-      - id: python-pylint
       - id: python-pylint-config
+      - id: python-pylint
+      - id: python-isort
       - id: python-requirements-txt-fixer
       - id: shell-check-syntax
       - id: shell-script-must-have-extension

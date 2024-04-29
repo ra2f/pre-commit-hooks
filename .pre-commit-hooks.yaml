@@ -369,6 +369,17 @@
   types: [python]
   entry: pylint
 
+- id: python-isort
+  name: '[Python] Run isort'
+  description: >
+    Run isort
+    Origin: https://github.com/PyCQA/isort
+  language: python
+  require_serial: true
+  types_or: [cython, pyi, python]
+  args: ['--filter-files']
+  entry: isort
+
 ###########
 ###########
 ## Shell ##
